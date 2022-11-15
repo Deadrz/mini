@@ -22,7 +22,7 @@ LIGHT='\033[0;37m'
 # ==========================================
 # ==========================================
 # Link 
-akbarvpn="raw.githubusercontent.com/Deadrz/mini/master/"
+akbarvpn="raw.githubusercontent.com/Deadrz/mini/main"
 
 # Getting
 MYIP=$(wget -qO- ipinfo.io/ip);
