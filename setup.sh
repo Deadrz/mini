@@ -10,7 +10,6 @@ fi
 # My Telegram : https://t.me/Akbar218
 # ==========================================
 # Color
-MYIP=$(wget -qO- ipinfo.io/ip);
 RED='\033[0;31m'
 NC='\033[0m'
 GREEN='\033[0;32m'
@@ -25,7 +24,7 @@ echo "Script Already Installed"
 exit 0
 fi
 mkdir /var/lib/akbarstorevpn;
-echo "IP=${MYIP}" >> /var/lib/akbarstorevpn/ipvps.conf
+echo "IP=" >> /var/lib/akbarstorevpn/ipvps.conf
 
 # ==========================================
 # ==========================================
@@ -34,6 +33,7 @@ akbarvpn="raw.githubusercontent.com/Deadrz/mini/main"
 
 # Getting
 
+MYIP=$(wget -qO- ipinfo.io/ip);
 echo "Checking VPS"
 IZIN=$( curl https://raw.githubusercontent.com/Deadrz/vps/master/ipvps.txt | grep $MYIP )
 if [ $MYIP = $IZIN ]; then
