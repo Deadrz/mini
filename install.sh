@@ -15,6 +15,7 @@ LIGHT='\033[0;37m'
 MYIP=$(wget -qO- ipinfo.io/ip);
 clear
 domain=$(cat /root/domain)
+
 apt install zip iptables iptables-persistent -y
 apt install curl socat xz-utils wget apt-transport-https gnupg gnupg2 gnupg1 dnsutils lsb-release -y 
 apt install socat cron bash-completion ntpdate -y
@@ -49,7 +50,6 @@ chmod +x /usr/local/bin/xray
 mkdir -p /var/log/xray/
 
 sudo lsof -t -i tcp:80 -s tcp:listen | sudo xargs kill
-
 cd /root/
 wget https://raw.githubusercontent.com/acmesh-official/acme.sh/master/acme.sh
 bash acme.sh --install
@@ -59,7 +59,6 @@ bash acme.sh --register-account -m senowahyu62@gmail.com
 bash acme.sh --issue -d $domain --standalone -k ec-256
 bash acme.sh --installcert -d $domain --fullchainpath /etc/xray/xray.crt --keypath /etc/xray/xray.key --ecc
 
-#service squid start
 uuid1=$(cat /proc/sys/kernel/random/uuid)
 uuid2=$(cat /proc/sys/kernel/random/uuid)
 uuid3=$(cat /proc/sys/kernel/random/uuid)
@@ -81,7 +80,7 @@ cat > /etc/xray/config.json << END
   },
   "inbounds": [
     {
-      "port": 443,
+      "port": 1443,
       "protocol": "vmess",
       "settings": {
         "clients": [
@@ -120,7 +119,6 @@ cat > /etc/xray/config.json << END
       "protocol": "vmess",
       "settings": {
         "clients": [
-
           {
             "id": "${uuid2}",
             "alterId": 0
@@ -152,7 +150,7 @@ cat > /etc/xray/config.json << END
       }
     },
     {
-      "port": 443,
+      "port": 1443,
       "protocol": "vless",
       "settings": {
         "clients": [
@@ -230,7 +228,7 @@ cat > /etc/xray/config.json << END
       }
     },
     {
-      "port": 80,
+      "port": 2083,
       "protocol": "trojan",
       "settings": {
         "clients": [
@@ -345,7 +343,7 @@ cat > /etc/systemd/system/xray.service << END
 [Unit]
 Description=Xray Service By Dedi Humaedi
 Documentation=https://t.me/Putri24
-
+After=network.target nss-lookup.target
 [Service]
 User=root
 CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
@@ -354,7 +352,6 @@ NoNewPrivileges=true
 ExecStart=/usr/local/bin/xray -config /etc/xray/config.json
 Restart=on-failure
 RestartPreventExitStatus=23
-
 [Install]
 WantedBy=multi-user.target
 END
@@ -362,10 +359,12 @@ END
 
 # // Enable & Start Service
 # Accept port Xray
-iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT
-iptables -I INPUT -m state --state NEW -m udp -p udp --dport 443 -j ACCEPT
+iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 1443 -j ACCEPT
+iptables -I INPUT -m state --state NEW -m udp -p udp --dport 1443 -j ACCEPT
 iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT
 iptables -I INPUT -m state --state NEW -m udp -p udp --dport 80 -j ACCEPT
+iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 2083 -j ACCEPT
+iptables -I INPUT -m state --state NEW -m udp -p udp --dport 2083 -j ACCEPT
 iptables-save > /etc/iptables.up.rules
 iptables-restore -t < /etc/iptables.up.rules
 netfilter-persistent save
@@ -397,7 +396,7 @@ cat > /etc/trojan-go/config.json << END
   "local_addr": "0.0.0.0",
   "local_port": 443,
   "remote_addr": "127.0.0.1",
-  "remote_port": 80,
+  "remote_port": 89,
   "log_level": 1,
   "log_file": "/var/log/trojan-go/trojan-go.log",
   "password": [
@@ -461,7 +460,6 @@ cat > /etc/systemd/system/trojan-go.service << END
 Description=Trojan-Go Service By Dedi Humaedi
 Documentation=https://t.me/Putri24
 After=network.target nss-lookup.target
-
 [Service]
 User=root
 CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
@@ -470,7 +468,6 @@ NoNewPrivileges=true
 ExecStart=/usr/local/bin/trojan-go -config /etc/trojan-go/config.json
 Restart=on-failure
 RestartPreventExitStatus=23
-
 [Install]
 WantedBy=multi-user.target
 END
@@ -481,7 +478,7 @@ $uuid
 END
 
 # restart
-iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT
+iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 2086 -j ACCEPT
 iptables -I INPUT -m state --state NEW -m udp -p udp --dport 443 -j ACCEPT
 iptables-save > /etc/iptables.up.rules
 iptables-restore -t < /etc/iptables.up.rules
@@ -492,3 +489,5 @@ systemctl stop trojan-go
 systemctl start trojan-go
 systemctl enable trojan-go
 systemctl restart trojan-go
+
+mv /root/domain /etc/xray/domain

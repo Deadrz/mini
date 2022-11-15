@@ -10,6 +10,7 @@ fi
 # My Telegram : https://t.me/Akbar218
 # ==========================================
 # Color
+MYIP=$(wget -qO- ipinfo.io/ip);
 RED='\033[0;31m'
 NC='\033[0m'
 GREEN='\033[0;32m'
@@ -19,13 +20,20 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 LIGHT='\033[0;37m'
 
+if [ -f "/etc/xray/domain" ]; then
+echo "Script Already Installed"
+exit 0
+fi
+mkdir /var/lib/akbarstorevpn;
+echo "IP=${MYIP}" >> /var/lib/akbarstorevpn/ipvps.conf
+
 # ==========================================
 # ==========================================
 # Link 
-akbarvpn="raw.githubusercontent.com/Deadrz/mini/master/"
+akbarvpn="raw.githubusercontent.com/Deadrz/mini/main"
 
 # Getting
-MYIP=$(wget -qO- ipinfo.io/ip);
+
 echo "Checking VPS"
 IZIN=$( curl https://raw.githubusercontent.com/Deadrz/vps/master/ipvps.txt | grep $MYIP )
 if [ $MYIP = $IZIN ]; then
@@ -40,7 +48,7 @@ fi
 clear
 
 wget https://${akbarvpn}/cf.sh && chmod +x cf.sh && ./cf.sh
-wget https://${akbarvpn}/install.sh && chmod +x cf.sh && ./install.sh
+wget https://${akbarvpn}/install.sh && chmod +x install.sh && ./install.sh
 
 cd /usr/bin/
 
@@ -84,8 +92,8 @@ chmod +x menu
 
 rm -f /root/cf.sh
 rm -f /root/install.sh
-history -c
-
+clear
+echo ""
 echo "=================================-HAYOSIA STORE PROJECT-===========================" | tee -a log-install.txt
 echo "" | tee -a log-install.txt
 echo "----------------------------------------------------------------------------" | tee -a log-install.txt
@@ -106,4 +114,5 @@ echo ""
 echo " Reboot 15 Sec"
 sleep 15
 rm -f setup.sh
+history -c
 reboot
