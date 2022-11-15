@@ -30,7 +30,7 @@ echo "IP=${MYIP}" >> /var/lib/akbarstorevpn/ipvps.conf
 # ==========================================
 # ==========================================
 # Link 
-akbarvpn="raw.githubusercontent.com/Deadrz/mini/master/"
+akbarvpn="raw.githubusercontent.com/Deadrz/mini/main"
 
 # Getting
 
